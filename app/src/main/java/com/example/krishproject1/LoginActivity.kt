@@ -1,6 +1,7 @@
 package com.example.krishproject1
 
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -23,15 +24,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import android.content.Intent
+import androidx.core.content.edit
 
 
 @Composable
 fun LogInScreen(modifier: Modifier = Modifier) {
 
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    // for toast messages
     val context = LocalContext.current
+    // local data persistence
+    val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
+    var username by remember { mutableStateOf(prefs.getString("username", "") ?: "") }
+    var password by remember { mutableStateOf(prefs.getString("password", "") ?: "") }
+
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -66,12 +70,13 @@ fun LogInScreen(modifier: Modifier = Modifier) {
         )
 
         Button(
-            onClick = {
+            onClick = { prefs.edit{putString("username", username); putString("password", password)}
                 Toast.makeText(context, "You logged in", Toast.LENGTH_LONG).show()
                 //using intent to move to the HomeScreen once logged in
                 val intent = Intent(context, HomeActivity::class.java)
                 context.startActivity(intent)
-            }, enabled = checkUsernameAndPassword(username,password) && checkLengthsAndSpaces(username, password)
+            },
+            enabled = checkUsernameAndPassword(username,password) && checkLengthsAndSpaces(username, password)
         ) {
             Text("Login")
         }

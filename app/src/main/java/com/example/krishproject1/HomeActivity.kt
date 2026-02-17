@@ -61,7 +61,10 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
             Text(
                 text = "SEARCH",
-                modifier = Modifier.clickable { }
+                modifier = Modifier.clickable(
+                    enabled = query.isNotBlank()
+                )
+                { }
             )
         }
 

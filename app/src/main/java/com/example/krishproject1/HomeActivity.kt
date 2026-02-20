@@ -12,7 +12,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-
+import android.content.Intent
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
@@ -73,9 +74,16 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
                 Spacer(Modifier.height(8.dp))
 
+                val context = LocalContext.current
+
                 Text(
                     text = "SEARCH",
-                    modifier = Modifier.clickable { }
+                    modifier = Modifier.clickable {
+                        // logic for sending intent: user query to sources screen
+                        val intent = Intent(context, SourcesActivity::class.java)
+                        intent.putExtra("query", query)
+                        context.startActivity(intent)
+                    }
                 )
             }
         }

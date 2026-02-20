@@ -1,132 +1,135 @@
 
 package com.example.krishproject1
 
-
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.Modifier
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.ui.Alignment
+
 
 class SourcesActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // the query from the home screen
+        val userQuery = intent.getStringExtra("query") ?: ""
         setContent {
-            SourcesScreen()
+            SourcesScreen(userQuery)
         }
     }
 }
 
 @Composable
-fun SourcesScreen(modifier: Modifier = Modifier) {
-
-    var query by remember { mutableStateOf("") }
-
+fun SourcesScreen(userQuery: String) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
+        // header
         Text(
-            text = "Android News",
-            fontSize = 40.sp,
+            text = "Results for $userQuery",
+            fontSize = 28.sp,
+            modifier = Modifier.padding(bottom = 24.dp)
         )
-        Spacer(modifier = Modifier.height(40.dp))
 
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            elevation = CardDefaults.cardElevation(8.dp)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("Term Search")
-
-                TextField(
-                    value = query,
-                    onValueChange = { query = it },
-                    placeholder = { Text("Search") }
-                )
-
-                Spacer(Modifier.height(8.dp))
-
-                Text(
-                    text = "SEARCH",
-                    modifier = Modifier.clickable { }
-                )
-            }
+        // categories dropdown section
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = "Categories",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            // calling function that displays the dropdown
+            SourcesCategoryDropdown()
         }
 
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            elevation = CardDefaults.cardElevation(8.dp)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("News by Location")
-
-                Spacer(Modifier.height(8.dp))
-
-                Text(
-                    text = "VIEW MAP",
-                    modifier = Modifier.clickable { }
-                )
-            }
+        // sources section with pages results
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = "Sources",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
-        Card(
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("SKIP(SEARCH ALL SOURCES)", modifier = Modifier.clickable { })
+        }
+    }
+}
+
+// dropdown logic
+@Composable
+fun SourcesCategoryDropdown(
+    // fields for news api
+    categories: List<String> = listOf(
+        "business", "entertainment", "general", "health", "science", "sports", "technology"
+    ),
+    onCategorySelected: (String) -> Unit = {}
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedCategory by remember { mutableStateOf("Select a category") }
+
+    // the dropdown box composable. Used android docs
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = selectedCategory,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            elevation = CardDefaults.cardElevation(8.dp)
+                .clickable { expanded = true }
+                .padding(16.dp)
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = MaterialTheme.shapes.small
+                )
+        )
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("Top Headlines")
 
-                Spacer(Modifier.height(8.dp))
-
-                Text(
-                    text = "VIEW TOP HEADLINES",
-                    modifier = Modifier.clickable { }
+            categories.forEach { category ->
+                DropdownMenuItem(
+                    text = { Text(category)},
+                    onClick = {
+                        selectedCategory = category
+                        expanded = false
+                        onCategorySelected(category)
+                    }
                 )
             }
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun SourcesPreview() {
-    SourcesScreen()
+    SourcesScreen("Hello World")
 }

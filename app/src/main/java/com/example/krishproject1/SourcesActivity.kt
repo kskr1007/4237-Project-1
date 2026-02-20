@@ -26,17 +26,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 
-class HomeActivity : ComponentActivity() {
+class SourcesActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            HomeScreen()
+            SourcesScreen()
         }
     }
 }
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun SourcesScreen(modifier: Modifier = Modifier) {
 
     var query by remember { mutableStateOf("") }
 
@@ -127,6 +127,6 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 }
 @Preview(showBackground = true)
 @Composable
-fun HomePreview() {
-    HomeScreen()
+fun SourcesPreview() {
+    SourcesScreen()
 }

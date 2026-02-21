@@ -19,9 +19,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
-
+import androidx.compose.foundation.lazy.items
 
 class SourcesActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +37,14 @@ class SourcesActivity : ComponentActivity() {
 
 @Composable
 fun SourcesScreen(userQuery: String) {
+
+    // list of fake sources for check-in
+    val fakeSources = listOf(
+        "FOX",
+        "Stock News",
+        "ESPN"
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -71,6 +80,16 @@ fun SourcesScreen(userQuery: String) {
             )
         }
 
+        // displaying fake data using a lazy column
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(fakeSources) { source ->
+                //  function for displaying sources using cards
+                SourceRow(source)
+            }
+        }
+
         Spacer(modifier = Modifier.height(32.dp))
 
         Column(
@@ -78,6 +97,23 @@ fun SourcesScreen(userQuery: String) {
         ) {
             Text("SKIP(SEARCH ALL SOURCES)", modifier = Modifier.clickable { })
         }
+    }
+}
+
+// in the future this will use news api, for now fake data
+@Composable
+fun SourceRow(name: String) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Text(
+            text = name,
+            modifier = Modifier
+                .padding(16.dp),
+            style = MaterialTheme.typography.bodyLarge
+        )
     }
 }
 
@@ -93,7 +129,7 @@ fun SourcesCategoryDropdown(
     var expanded by remember { mutableStateOf(false) }
     var selectedCategory by remember { mutableStateOf("Select a category") }
 
-    // the dropdown box composable. Used android docs
+    // the dropdown box composable. Used android docs and internet to find code
     Box(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = selectedCategory,

@@ -22,14 +22,13 @@ class MapActivity : ComponentActivity() {
 @Composable
 fun DisplayMap(modifier: Modifier = Modifier) {
 
-    val singapore = LatLng(1.35, 103.87)
-
-    val markerState = remember { MarkerState(position = singapore) }
+    val center = LatLng(39.8097, -98.5556)
+    val markerState = remember { MarkerState(position = center) }
 
     var addressInfo by remember { mutableStateOf("") }
 
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(singapore, 10f)
+        position = CameraPosition.fromLatLngZoom(center, 10f)
     }
 
     GoogleMap(

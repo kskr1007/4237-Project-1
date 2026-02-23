@@ -103,9 +103,13 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
                 Spacer(Modifier.height(8.dp))
 
+                val context = LocalContext.current
                 Text(
                     text = "VIEW MAP",
-                    modifier = Modifier.clickable { }
+                    modifier = Modifier.clickable {
+                        val intent = Intent(context, MapActivity::class.java)
+                        context.startActivity(intent)
+                    }
                 )
             }
         }

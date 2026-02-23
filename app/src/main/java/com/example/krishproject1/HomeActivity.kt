@@ -3,6 +3,8 @@ package com.example.krishproject1
 
 
 
+import android.R.attr.enabled
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,8 +26,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.ui.graphics.Color
+import androidx.core.content.edit
 
 class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +46,9 @@ class HomeActivity : ComponentActivity() {
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
 
-    var query by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
+    var query by remember { mutableStateOf(prefs.getString("query", "") ?: "") }
 
     Column(
         modifier = modifier
@@ -66,21 +75,35 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             ) {
                 Text("Term Search")
 
+                // Search Term Input req.
                 TextField(
                     value = query,
                     onValueChange = { query = it },
-                    placeholder = { Text("Search") }
+                    placeholder = { Text("Search") },
+                    leadingIcon = {
+                        // code for search icon- from online search
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = "Search Icon"
+                        )
+                    }
                 )
 
                 Spacer(Modifier.height(8.dp))
 
                 val context = LocalContext.current
 
+               // Search Button req.
                 Text(
                     text = "SEARCH",
-                    modifier = Modifier.clickable {
-                        // logic for sending intent: user query to sources screen
+                    color = Color.Blue,
+                    // Empty Search Term req: only clickable when query field is not blank
+                    modifier = Modifier.clickable(enabled = query.isNotBlank()) {
+                        prefs.edit {
+                            putString("query", query)
+                        }
                         val intent = Intent(context, SourcesActivity::class.java)
+                        // Data Persistence req: save user query
                         intent.putExtra("query", query)
                         context.startActivity(intent)
                     }
@@ -104,8 +127,10 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 Spacer(Modifier.height(8.dp))
 
                 val context = LocalContext.current
+                // Local News Button req.
                 Text(
                     text = "VIEW MAP",
+                    color = Color.Blue,
                     modifier = Modifier.clickable {
                         val intent = Intent(context, MapActivity::class.java)
                         context.startActivity(intent)
@@ -125,18 +150,24 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Top Headlines")
+                Text("Top Headlines", )
 
                 Spacer(Modifier.height(8.dp))
 
+                // Top Headlines Button req.
                 Text(
                     text = "VIEW TOP HEADLINES",
+                    color = Color.Blue,
                     modifier = Modifier.clickable { }
                 )
             }
         }
     }
 }
+fun checkQuery(query: String): Boolean {
+    return query.isNotBlank()
+}
+
 @Preview(showBackground = true)
 @Composable
 fun HomePreview() {

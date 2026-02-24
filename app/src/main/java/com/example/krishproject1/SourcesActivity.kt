@@ -27,7 +27,7 @@ import androidx.compose.foundation.lazy.items
 class SourcesActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // the query from the home screen
+        // Search Term req: the query from the home screen
         val userQuery = intent.getStringExtra("query") ?: ""
         setContent {
             SourcesScreen(userQuery)
@@ -62,7 +62,6 @@ fun SourcesScreen(userQuery: String) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = "Categories",
-                style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             // calling function that displays the dropdown
@@ -75,7 +74,6 @@ fun SourcesScreen(userQuery: String) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = "Sources",
-                style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
         }
@@ -85,7 +83,7 @@ fun SourcesScreen(userQuery: String) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(fakeSources) { source ->
-                //  function for displaying sources using cards
+                //  calling function for displaying sources using cards
                 SourceRow(source)
             }
         }
@@ -106,13 +104,11 @@ fun SourceRow(name: String) {
     Card(
         modifier = Modifier
             .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Text(
             text = name,
             modifier = Modifier
                 .padding(16.dp),
-            style = MaterialTheme.typography.bodyLarge
         )
     }
 }
@@ -120,7 +116,7 @@ fun SourceRow(name: String) {
 // dropdown logic
 @Composable
 fun SourcesCategoryDropdown(
-    // fields for news api
+    // Sources Categories req: fields for news api
     categories: List<String> = listOf(
         "business", "entertainment", "general", "health", "science", "sports", "technology"
     ),

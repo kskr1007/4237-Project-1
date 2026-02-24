@@ -68,7 +68,6 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
-            elevation = CardDefaults.cardElevation(8.dp)
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -117,7 +116,6 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
-            elevation = CardDefaults.cardElevation(8.dp)
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -145,7 +143,6 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
-            elevation = CardDefaults.cardElevation(8.dp)
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally

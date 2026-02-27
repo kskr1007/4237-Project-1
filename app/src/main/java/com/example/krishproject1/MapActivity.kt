@@ -18,7 +18,7 @@ class MapActivity : ComponentActivity() {
         }
     }
 }
-
+// Google Maps req
 @Composable
 fun DisplayMap(modifier: Modifier = Modifier) {
 

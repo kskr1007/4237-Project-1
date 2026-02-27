@@ -23,6 +23,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.res.stringResource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class SourcesActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,21 +40,28 @@ class SourcesActivity : ComponentActivity() {
 
 @Composable
 fun SourcesScreen(userQuery: String) {
+    val newsManager = remember { NewsManager() }
+    val apiKey = stringResource(id = R.string.NewsKey)
+    // start with business
+    var selectedCategory by remember { mutableStateOf("business") }
+    var sources by remember { mutableStateOf<List<NewsSource>>(emptyList()) }
 
-    // list of fake sources for check-in
-    val fakeSources = listOf(
-        "FOX",
-        "Stock News",
-        "ESPN"
-    )
-
+    LaunchedEffect(selectedCategory) {
+        sources = withContext(Dispatchers.IO) {
+            // calling news manager to get sources
+            newsManager.retrieveSources(
+                selectedCategory,
+                apiKey
+            )
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // header
+        // Search Term req
         Text(
             text = "Results for $userQuery",
             fontSize = 28.sp,
@@ -61,12 +71,15 @@ fun SourcesScreen(userQuery: String) {
         // categories dropdown section
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
-                text = "Categories",
+                text = "Category",
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             // calling function that displays the dropdown
-            SourcesCategoryDropdown()
-        }
+            SourcesCategoryDropdown(
+                onCategorySelected = { category ->
+                    selectedCategory = category
+                }
+            )        }
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -77,19 +90,35 @@ fun SourcesScreen(userQuery: String) {
                 modifier = Modifier.padding(bottom = 8.dp)
             )
         }
-
-        // displaying fake data using a lazy column
+        // lazy column to show card for each source, no paging here.
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
-            items(fakeSources) { source ->
-                //  calling function for displaying sources using cards
-                SourceRow(source)
+            items(sources) { source ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = source.name,
+                            // bolding
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = source.description,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
             }
         }
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        // Skip Sources req
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -113,7 +142,7 @@ fun SourceRow(name: String) {
     }
 }
 
-// dropdown logic
+// Sources Categories req: using box and dropdown menu
 @Composable
 fun SourcesCategoryDropdown(
     // Sources Categories req: fields for news api
@@ -123,7 +152,7 @@ fun SourcesCategoryDropdown(
     onCategorySelected: (String) -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedCategory by remember { mutableStateOf("Select a category") }
+    var selectedCategory by remember { mutableStateOf("Business") }
 
     // the dropdown box composable. Used android docs and internet to find code
     Box(modifier = Modifier.fillMaxWidth()) {

@@ -169,7 +169,7 @@ fun SourcesCategoryDropdown(
     var expanded by remember { mutableStateOf(false) }
     var selectedCategory by remember { mutableStateOf("Business") }
 
-    // the dropdown box composable. Used android docs and internet to find code
+    // the dropdown box composable. **Used android docs and internet to find code**
     Box(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = selectedCategory,

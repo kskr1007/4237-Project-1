@@ -44,7 +44,6 @@ class HomeActivity : ComponentActivity() {
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
-
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
     var query by remember { mutableStateOf(prefs.getString("query", "") ?: "") }
@@ -159,9 +158,6 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             }
         }
     }
-}
-fun checkQuery(query: String): Boolean {
-    return query.isNotBlank()
 }
 
 @Preview(showBackground = true)

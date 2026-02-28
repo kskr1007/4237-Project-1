@@ -21,11 +21,7 @@ class NewsManager {
         okHttpClient = builder.build()
     }
 
-     fun getSources(
-        category: String,
-        apiKey: String
-    ): List<NewsSource> {
-
+     fun getSources(category: String, apiKey: String): List<NewsSource> {
         // making request body
         val request = Request.Builder()
             .url("https://newsapi.org/v2/sources?category=$category&apiKey=$apiKey")
@@ -38,32 +34,38 @@ class NewsManager {
         Log.d("response", "$response")
 
         if (response.isSuccessful && !responseBody.isNullOrEmpty()) {
-
+            // make list of sources
             val sources = mutableListOf<NewsSource>()
+            // create json object with response body
             val json = JSONObject(responseBody)
+            // get "sources" from the json object
             val sourcesArray = json.getJSONArray("sources")
-
+            // for each source
             for (i in 0 until sourcesArray.length()) {
-
+                // current source
                 val currentSource = sourcesArray.getJSONObject(i)
-
+                // get id, name, and description
                 val id = currentSource.getString("id")
                 val name = currentSource.getString("name")
                 val description = currentSource.getString("description")
-
+                // create NewsSource object with the extracted properties
                 val source = NewsSource(
                     id = id,
                     name = name,
                     description = description
                 )
+                // add to list
                 sources.add(source)
             }
+            // return list of sources to be displayed
             return sources
         } else {
+            // empty list if no sources were found
             return listOf()
         }
     }
      fun getArticles(query: String, sourceId: String, apiKey: String): List<NewsArticle> {
+         // Results Networking req
         // request using specific query and source
         val request = Request.Builder()
             .url("https://newsapi.org/v2/everything?q=$query&sources=$sourceId&language=en&apiKey=$apiKey")            .get()
@@ -90,13 +92,16 @@ class NewsManager {
                 val description = currentArticle.optString("description")
                 val imageUrl = currentArticle.optString("urlToImage")
                 val url = currentArticle.optString("url")
+                val source = currentArticle.getJSONObject("source")
+                val sourceName = source.optString("name")
 
-                // creating article object with the gathered fields
+                // creating NewsArticle object with the gathered fields
                 val article = NewsArticle(
                     title = title,
+                    sourceName = sourceName,
                     description = description,
                     imageUrl = imageUrl,
-                    url = url
+                    url = url,
                 )
                 // adding new article to results list
                 articlesList.add(article)

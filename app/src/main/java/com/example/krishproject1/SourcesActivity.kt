@@ -1,6 +1,7 @@
 
 package com.example.krishproject1
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,6 +24,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -40,16 +42,19 @@ class SourcesActivity : ComponentActivity() {
 
 @Composable
 fun SourcesScreen(userQuery: String) {
+    // for the news api
     val newsManager = remember { NewsManager() }
+    // getting api key from values folder
     val apiKey = stringResource(id = R.string.NewsKey)
     // start with business
     var selectedCategory by remember { mutableStateOf("business") }
+    // list of sources
     var sources by remember { mutableStateOf<List<NewsSource>>(emptyList()) }
 
     LaunchedEffect(selectedCategory) {
         sources = withContext(Dispatchers.IO) {
-            // calling news manager to get sources
-            newsManager.retrieveSources(
+            // Changing Sources req: based on selected category, api request is different
+            newsManager.getSources(
                 selectedCategory,
                 apiKey
             )
@@ -79,31 +84,42 @@ fun SourcesScreen(userQuery: String) {
                 onCategorySelected = { category ->
                     selectedCategory = category
                 }
-            )        }
+            )
+        }
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // sources section with pages results
+        // sources section
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = "Sources",
                 modifier = Modifier.padding(bottom = 8.dp)
             )
         }
-        // lazy column to show card for each source, no paging here.
+        // Sources Networking req: lazy column to show card for each source, no paging here.
         LazyColumn(
             modifier = Modifier.fillMaxWidth()
         ) {
             items(sources) { source ->
+
+                val context = LocalContext.current
+
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
+                        .clickable {
+                            // for passing query and source name to results screen
+                            val intent = Intent(context, ResultsActivity::class.java)
+                            intent.putExtra("query", userQuery)
+                            intent.putExtra("sourceId", source.id)
+                            intent.putExtra("sourceName", source.name)
+                            context.startActivity(intent)
+                        }
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
                             text = source.name,
-                            // bolding
                             style = MaterialTheme.typography.titleMedium
                         )
                         Spacer(modifier = Modifier.height(4.dp))
@@ -127,27 +143,12 @@ fun SourcesScreen(userQuery: String) {
     }
 }
 
-// in the future this will use news api, for now fake data
-@Composable
-fun SourceRow(name: String) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-    ) {
-        Text(
-            text = name,
-            modifier = Modifier
-                .padding(16.dp),
-        )
-    }
-}
-
 // Sources Categories req: using box and dropdown menu
 @Composable
 fun SourcesCategoryDropdown(
     // Sources Categories req: fields for news api
     categories: List<String> = listOf(
-        "business", "entertainment", "general", "health", "science", "sports", "technology"
+        "Business", "Entertainment", "General", "Health", "Science", "Sports", "Technology"
     ),
     onCategorySelected: (String) -> Unit = {}
 ) {

@@ -98,7 +98,8 @@ fun SourcesScreen(userQuery: String) {
         }
         // Sources Networking req: lazy column to show card for each source, no paging here.
         LazyColumn(
-            modifier = Modifier.fillMaxWidth()
+            // constrains the space the source results take
+            modifier = Modifier.weight(1f),
         ) {
             items(sources) { source ->
 
@@ -138,7 +139,20 @@ fun SourcesScreen(userQuery: String) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("SKIP(SEARCH ALL SOURCES)", modifier = Modifier.clickable { })
+            val context = LocalContext.current
+            Button(
+                onClick = {
+                    // if skip sources is clicked, send query, blank source id, and general source name
+                    val intent = Intent(context, ResultsActivity::class.java)
+                    intent.putExtra("query", userQuery)
+                    intent.putExtra("sourceId", "")
+                    intent.putExtra("sourceName", "All Sources")
+                    context.startActivity(intent)
+                },
+                modifier = Modifier.padding(top = 16.dp)
+            ) {
+                Text("Skip Source Selection")
+            }
         }
     }
 }

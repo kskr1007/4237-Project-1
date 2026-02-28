@@ -30,6 +30,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import coil.compose.AsyncImage
 import androidx.core.net.toUri
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import org.json.JSONObject
 
 class ResultsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,24 +47,22 @@ class ResultsActivity : ComponentActivity() {
     }
 }
 @Composable
-fun ResultsScreen(
-    userQuery: String,
-    sourceId: String,
-    sourceName: String
-) {
+fun ResultsScreen(userQuery: String, sourceId: String, sourceName: String) {
     val newsManager = remember { NewsManager() }
     val apiKey = stringResource(id = R.string.NewsKey)
 
     var articles by remember { mutableStateOf<List<NewsArticle>>(emptyList()) }
     val context = LocalContext.current
-    LaunchedEffect(sourceId) {
-        // get list of articles associated with the source and query
+    LaunchedEffect(userQuery, sourceId) {
         articles = withContext(Dispatchers.IO) {
-            newsManager.getArticles(
-                userQuery,
-                sourceId,
-                apiKey
-            )
+            // if no source is is provided, show all sources
+            if (sourceId.isEmpty()) {
+                newsManager.skipSources(userQuery, apiKey)
+            }
+            // if a source is provided use that in request
+            else {
+                newsManager.getArticles(userQuery, sourceId, apiKey)
+            }
         }
     }
 
@@ -121,3 +122,4 @@ fun ResultsScreen(
         }
     }
 }
+

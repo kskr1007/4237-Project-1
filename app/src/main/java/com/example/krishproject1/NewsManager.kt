@@ -7,7 +7,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
 
 class NewsManager {
-
+    // For this class I used the YelpManager from class as a reference
     val okHttpClient: OkHttpClient
 
     init {
@@ -21,6 +21,7 @@ class NewsManager {
         okHttpClient = builder.build()
     }
 
+    // gets all sources for a certain category
      fun getSources(category: String, apiKey: String): List<NewsSource> {
         // making request body
         val request = Request.Builder()
@@ -64,6 +65,8 @@ class NewsManager {
             return listOf()
         }
     }
+
+    // gets all articles for a source
      fun getArticles(query: String, sourceId: String, apiKey: String): List<NewsArticle> {
          // Results Networking req
         // request using specific query and source
@@ -112,6 +115,8 @@ class NewsManager {
          // empty list if nothing found
         return listOf()
     }
+
+    // gets all articles for a certain query
      fun skipSources(query: String, apiKey: String): List<NewsArticle> {
         // same logic, but doesn't use a specific source
         val request = Request.Builder()

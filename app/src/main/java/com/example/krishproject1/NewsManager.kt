@@ -112,4 +112,45 @@ class NewsManager {
          // empty list if nothing found
         return listOf()
     }
+     fun skipSources(query: String, apiKey: String): List<NewsArticle> {
+        // same logic, but doesn't use a specific source
+        val request = Request.Builder()
+            .url("https://newsapi.org/v2/everything?q=$query&language=en&apiKey=$apiKey")
+            .get()
+            .build()
+
+        val response = okHttpClient.newCall(request).execute()
+        val responseBody = response.body?.string()
+
+        if (response.isSuccessful && !responseBody.isNullOrEmpty()) {
+
+            val articlesList = mutableListOf<NewsArticle>()
+            val json = JSONObject(responseBody)
+            val articles = json.getJSONArray("articles")
+
+            for (i in 0 until articles.length()) {
+                val currentArticle = articles.getJSONObject(i)
+
+                val title = currentArticle.optString("title")
+                val description = currentArticle.optString("description")
+                val imageUrl = currentArticle.optString("urlToImage")
+                val url = currentArticle.optString("url")
+
+                val sourceObject = currentArticle.getJSONObject("source")
+                val sourceName = sourceObject.optString("name")
+
+                articlesList.add(
+                    NewsArticle(
+                        title = title,
+                        description = description,
+                        imageUrl = imageUrl,
+                        url = url,
+                        sourceName = sourceName
+                    )
+                )
+            }
+            return articlesList
+        }
+        return listOf()
+    }
 }

@@ -1,9 +1,6 @@
 
 package com.example.krishproject1
 
-
-
-import android.R.attr.enabled
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -41,7 +38,6 @@ class HomeActivity : ComponentActivity() {
         }
     }
 }
-
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current

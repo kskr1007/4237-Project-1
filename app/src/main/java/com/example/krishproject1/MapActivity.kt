@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,7 +22,6 @@ import kotlinx.coroutines.launch
 
 
 // For this class I used the YelpManager from class as a reference
-
 class MapActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +67,7 @@ fun DisplayMap(modifier: Modifier = Modifier) {
                         ),
                         durationMs = 1000
                     )
+                    // in the future, geocode this to be dynamic
                     searchTerm = "Virginia"
                     showResults = true
                 }
@@ -87,6 +88,8 @@ fun DisplayMap(modifier: Modifier = Modifier) {
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .height(350.dp)
+                    // this raises the base of the box so it doesn't cover zoom
+                    .offset(y = (-90).dp)
                     .background(Color.White)
             ) {
                 // calling results screen function to display articles

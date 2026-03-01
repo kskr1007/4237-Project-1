@@ -3,12 +3,22 @@ package com.example.krishproject1
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
+import kotlinx.coroutines.launch
+
 
 // For this class I used the YelpManager from class as a reference
 
@@ -23,29 +33,70 @@ class MapActivity : ComponentActivity() {
 // Google Maps req
 @Composable
 fun DisplayMap(modifier: Modifier = Modifier) {
-
-    val center = LatLng(39.8097, -98.5556)
+    var searchTerm by remember { mutableStateOf("") }
+    // I had to search google maps and api to get this variable
+    val scope = rememberCoroutineScope()
+    // for showing results box on bottom
+    var showResults by remember { mutableStateOf(false) }
+    // center point
+    val center = LatLng(38.91, -77.4)
+    // for marker
     val markerState = remember { MarkerState(position = center) }
-
+    // address
     var addressInfo by remember { mutableStateOf("") }
-
+    // for zooming
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(center, 10f)
     }
-
-    GoogleMap(
-        modifier = Modifier.fillMaxSize(),
-        cameraPositionState = cameraPositionState,
-        onMapLongClick = {
-            markerState.position = it
-            addressInfo = "Resolving Address..."
-            println("Long clicked at ${it.latitude}, ${it.longitude}")
+    // Location Selection req
+    // Google Maps req
+    Box(modifier = Modifier.fillMaxSize()) {
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState,
+            onMapLongClick = { it ->
+                // updating lat and long for marker
+                markerState.position = it
+                addressInfo = "Resolving Address..."
+                // I had to search how to zoom in
+                scope.launch {
+                    cameraPositionState.animate(
+                        update = CameraUpdateFactory.newLatLngZoom(
+                            it,
+                            15f
+                        ),
+                        durationMs = 1000
+                    )
+                    searchTerm = "Virginia"
+                    showResults = true
+                }
+                println("Long clicked at ${it.latitude}, ${it.longitude}")
+            }
+        ) {
+            Marker(
+                state = markerState,
+                title = addressInfo,
+                snippet = "${markerState.position.latitude}, ${markerState.position.longitude}"
+            )
         }
-    ) {
-        Marker(
-            state = markerState,
-            title = addressInfo,
-            snippet = "${markerState.position.latitude}, ${markerState.position.longitude}"
-        )
+
+        // used box to organize articles
+        if (showResults) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(350.dp)
+                    .background(Color.White)
+            ) {
+                // calling results screen function to display articles
+                ResultsScreen(
+                    userQuery = searchTerm,
+                    sourceId = "",
+                    sourceName = searchTerm,
+                    horizontal = true
+                )
+            }
+        }
     }
 }

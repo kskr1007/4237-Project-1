@@ -5,6 +5,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
+import java.net.URLEncoder
 
 class NewsManager {
     // For this class I used the YelpManager from class as a reference

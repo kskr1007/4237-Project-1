@@ -1,5 +1,6 @@
 package com.example.krishproject1
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,8 +14,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.edit
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -36,15 +39,23 @@ class MapActivity : ComponentActivity() {
 // Google Maps req
 @Composable
 fun DisplayMap(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    // shared preferences
+    val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
+    // default lat,lon is DC
+    var lat by remember { mutableStateOf(prefs.getString("lat", "38.9073") ?: "38.9073") }
+    var lon by remember { mutableStateOf(prefs.getString("lon", "77.0369") ?: "77.0369") }
+    // google api key
     val apiKey = stringResource(id = R.string.MapsKey)
+    // used to call helper functions
     val newsManager = remember { NewsManager() }
     var loc by remember { mutableStateOf("") }
     // I had to search google maps and api to get this variable
     val scope = rememberCoroutineScope()
     // for showing results box on bottom
     var showResults by remember { mutableStateOf(false) }
-    // center point
-    val center = LatLng(38.91, -77.4)
+    // center point using lat and lon
+    val center = LatLng(lat.toDouble(), lon.toDouble())
     // for marker
     val markerState = remember { MarkerState(position = center) }
     // address
@@ -55,12 +66,44 @@ fun DisplayMap(modifier: Modifier = Modifier) {
     }
     // Location Selection req
     // Google Maps req
+    // launched effect allows the saved lat, lon to be used on the start of the activity
+    LaunchedEffect(Unit) {
+        // get the coordinates from local vars (that were updated with new values)
+        val initialLat = lat.toDoubleOrNull() ?: 38.91
+        val initialLon = lon.toDoubleOrNull() ?: -77.4
+
+        // get city using saved coordinates
+        val city = withContext(Dispatchers.IO) {
+            newsManager.getCity(initialLat, initialLon, apiKey)
+        }
+
+        // show articles for saved city
+        if (city.isNotEmpty()) {
+            loc = city
+            showResults = true
+        }
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
             onMapLongClick = { it ->
                 markerState.position = it
+                // Data Persistence req: save location and results
+                // save lat
+                val savedLat = it.latitude.toString()
+                // save lon
+                val savedLon = it.longitude.toString()
+                // add to shared pref
+                prefs.edit {
+                    putString("lat", savedLat)
+                    putString("lon", savedLon)
+                }
+                // update local variables
+                lat = savedLat
+                lon = savedLon
+
+                // scope.launch uses a different thread to run in background
                 scope.launch {
                     cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(it, 15f))
                     // using Google geocoding api to get city from lat, lng
@@ -80,7 +123,7 @@ fun DisplayMap(modifier: Modifier = Modifier) {
             )
         }
 
-        // used box to organize articles
+        // News Overlay req: used box to organize articles
         if (showResults) {
             Box(
                 modifier = Modifier

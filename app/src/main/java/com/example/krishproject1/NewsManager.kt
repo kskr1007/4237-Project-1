@@ -5,7 +5,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
-import java.net.URLEncoder
 
 class NewsManager {
     // For this class I used the YelpManager from class as a reference
@@ -158,5 +157,42 @@ class NewsManager {
             return articlesList
         }
         return listOf()
+    }
+
+    // getting city for geocoded location
+    fun getCity(lat: Double, lng: Double, apiKey: String): String {
+        val request = Request.Builder()
+            .url("https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$apiKey")
+            .get()
+            .build()
+
+        val response = okHttpClient.newCall(request).execute()
+        val responseBody = response.body?.string()
+
+        if (response.isSuccessful && !responseBody.isNullOrEmpty()) {
+            val json = JSONObject(responseBody)
+
+            if (json.getString("status") == "OK") {
+                // get results field
+                val components = json.getJSONArray("results")
+                    // get first result
+                    .getJSONObject(0)
+                    // get address of first result
+                    .getJSONArray("address_components")
+
+                // use loop to find types = locality
+                // **utilized Google Maps API docs and online code for this part**
+                for (i in 0 until components.length()) {
+                    val c = components.getJSONObject(i)
+                    val types = c.getJSONArray("types").toString()
+                    // if a locality is found return it's "long_name"
+                    if (types.contains("locality")) {
+                        return c.getString("long_name")
+                    }
+                }
+            }
+        }
+        // if no locality was found
+        return "Location Not Found"
     }
 }

@@ -89,108 +89,108 @@ fun ResultsScreen(userQuery: String, sourceId: String, sourceName: String, horiz
                 modifier = Modifier.padding(bottom = 16.dp)
             )
             // if the article is displayed over map
-                if (horizontal) {
-                    // using lazy row for horizontal scrolling
-                    LazyRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                    ) {
-                        items(articles) { article ->
-                            Card(
-                                modifier = Modifier
-                                    .width(300.dp)
-                                    .clickable {
-                                        // open article in browser
-                                        val intent = Intent(
-                                            Intent.ACTION_VIEW,
-                                            article.url.toUri()
-                                        )
-                                        context.startActivity(intent)
-                                    }
-                            ) {
-                                Column(modifier = Modifier.padding(12.dp)) {
-                                    AsyncImage(
-                                        model = article.imageUrl,
-                                        contentDescription = article.title,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(150.dp)
+            if (horizontal) {
+                // using lazy row for horizontal scrolling
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                ) {
+                    items(articles) { article ->
+                        Card(
+                            modifier = Modifier
+                                .width(300.dp)
+                                .clickable {
+                                    // open article in browser
+                                    val intent = Intent(
+                                        Intent.ACTION_VIEW,
+                                        article.url.toUri()
                                     )
-
-                                    Spacer(modifier = Modifier.height(8.dp))
-
-                                    Text(
-                                        text = article.title,
-                                        style = MaterialTheme.typography.titleMedium
-                                    )
-
-                                    // Source
-                                    Text(
-                                        text = article.sourceName,
-                                        style = MaterialTheme.typography.bodySmall
-                                    )
-
-                                    Spacer(modifier = Modifier.height(4.dp))
-
-                                    // Description
-                                    Text(
-                                        text = article.description ?: "",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
+                                    context.startActivity(intent)
                                 }
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                AsyncImage(
+                                    model = article.imageUrl,
+                                    contentDescription = article.title,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(150.dp)
+                                )
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Text(
+                                    text = article.title,
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+
+                                // Source
+                                Text(
+                                    text = article.sourceName,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+
+                                Spacer(modifier = Modifier.height(4.dp))
+
+                                // Description
+                                Text(
+                                    text = article.description ?: "",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
                             }
                         }
                     }
                 }
+            }
 
-                // regular articles display
-                if (!horizontal) {
-                    LazyColumn {
-                        // Article Display req: displaying image, name, sourceName, and description for each article in loaded list from source
-                        items(articles) { article ->
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 6.dp)
-                                    .width(300.dp)
-                                    .clickable {
-                                        // when card is clicked the url is used to open the article in a web browser
-                                        val intent = Intent(
-                                            Intent.ACTION_VIEW,
-                                            article.url.toUri()
-                                        )
-                                        context.startActivity(intent)
-                                    }
-                            ) {
-                                Column(modifier = Modifier.padding(16.dp)) {
-                                    AsyncImage(
-                                        model = article.imageUrl,
-                                        contentDescription = article.title,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(200.dp)
+            // regular articles display
+            if (!horizontal) {
+                LazyColumn {
+                    // Article Display req: displaying image, name, sourceName, and description for each article in loaded list from source
+                    items(articles) { article ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 6.dp)
+                                .width(300.dp)
+                                .clickable {
+                                    // when card is clicked the url is used to open the article in a web browser
+                                    val intent = Intent(
+                                        Intent.ACTION_VIEW,
+                                        article.url.toUri()
                                     )
-                                    Text(
-                                        text = article.title,
-                                        // bolding
-                                        style = MaterialTheme.typography.titleMedium
-                                    )
-                                    Text(
-                                        text = article.sourceName,
-                                        style = MaterialTheme.typography.titleMedium
-                                    )
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    Text(
-                                        // null safe description
-                                        text = article.description ?: "",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
+                                    context.startActivity(intent)
                                 }
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                AsyncImage(
+                                    model = article.imageUrl,
+                                    contentDescription = article.title,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(200.dp)
+                                )
+                                Text(
+                                    text = article.title,
+                                    // bolding
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Text(
+                                    text = article.sourceName,
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    // null safe description
+                                    text = article.description ?: "",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
                             }
                         }
                     }
                 }
+            }
         }
         // if loading is true, show a spinning UI element
         // I got this code from internet
@@ -202,4 +202,3 @@ fun ResultsScreen(userQuery: String, sourceId: String, sourceName: String, horiz
         }
     }
 }
-

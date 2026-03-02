@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+# Ignore the XML files with my keys
+/app/src/main/res/values/MapsKey.xml
+/app/src/main/res/values/NewsKeY.xml

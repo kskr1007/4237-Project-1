@@ -159,7 +159,7 @@ class NewsManager {
         return listOf()
     }
 
-    // getting city for geocoded location
+    // “Local News” Networking req: getting city for geocoded location
     fun getCity(lat: Double, lng: Double, apiKey: String): String {
         val request = Request.Builder()
             .url("https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$apiKey")

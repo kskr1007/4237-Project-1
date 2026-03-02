@@ -13,12 +13,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 // For this class I used the YelpManager from class as a reference
@@ -33,7 +36,9 @@ class MapActivity : ComponentActivity() {
 // Google Maps req
 @Composable
 fun DisplayMap(modifier: Modifier = Modifier) {
-    var searchTerm by remember { mutableStateOf("") }
+    val apiKey = stringResource(id = R.string.MapsKey)
+    val newsManager = remember { NewsManager() }
+    var loc by remember { mutableStateOf("") }
     // I had to search google maps and api to get this variable
     val scope = rememberCoroutineScope()
     // for showing results box on bottom
@@ -55,23 +60,17 @@ fun DisplayMap(modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
             onMapLongClick = { it ->
-                // updating lat and long for marker
                 markerState.position = it
-                addressInfo = "Resolving Address..."
-                // I had to search how to zoom in
                 scope.launch {
-                    cameraPositionState.animate(
-                        update = CameraUpdateFactory.newLatLngZoom(
-                            it,
-                            15f
-                        ),
-                        durationMs = 1000
-                    )
-                    // in the future, geocode this to be dynamic
-                    searchTerm = "Virginia"
+                    cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(it, 15f))
+                    // using Google geocoding api to get city from lat, lng
+                    val city = withContext(Dispatchers.IO) {
+                        newsManager.getCity(it.latitude, it.longitude, apiKey)
+                    }
+                    loc = city
+                    // switch used to display articles box
                     showResults = true
                 }
-                println("Long clicked at ${it.latitude}, ${it.longitude}")
             }
         ) {
             Marker(
@@ -94,9 +93,9 @@ fun DisplayMap(modifier: Modifier = Modifier) {
             ) {
                 // calling results screen function to display articles
                 ResultsScreen(
-                    userQuery = searchTerm,
+                    userQuery = loc,
                     sourceId = "",
-                    sourceName = searchTerm,
+                    sourceName = loc,
                     horizontal = true
                 )
             }

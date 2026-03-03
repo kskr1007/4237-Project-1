@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -81,7 +82,7 @@ fun ResultsScreen(userQuery: String, sourceId: String, sourceName: String, horiz
                 text =
                     // in the case that it is being called via map screen
                     if (sourceName != userQuery) {
-                        "$sourceName results for $userQuery"
+                        "$sourceName Results for $userQuery"
                     } else {
                         "Results for $userQuery"
                     },
@@ -132,6 +133,16 @@ fun ResultsScreen(userQuery: String, sourceId: String, sourceName: String, horiz
                                 )
 
                                 Spacer(modifier = Modifier.height(4.dp))
+
+                                // content snippet
+                                Text(
+                                    text = article.content ?: "No additional content available.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    // just show a little content
+                                    maxLines = 4,
+                                )
+
+                                Spacer(modifier = Modifier.height(8.dp))
 
                                 // Description
                                 Text(

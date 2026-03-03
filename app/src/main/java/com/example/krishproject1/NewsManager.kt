@@ -92,6 +92,7 @@ class NewsManager {
                 // for each article: get the title, description, imageURL, and url
                 val currentArticle = articles.getJSONObject(i)
                 val title = currentArticle.optString("title")
+                val contentSnippet = currentArticle.optString("content")
                 val description = currentArticle.optString("description")
                 val imageUrl = currentArticle.optString("urlToImage")
                 val url = currentArticle.optString("url")
@@ -103,6 +104,7 @@ class NewsManager {
                     title = title,
                     sourceName = sourceName,
                     description = description,
+                    content = contentSnippet,
                     imageUrl = imageUrl,
                     url = url,
                 )
@@ -140,7 +142,7 @@ class NewsManager {
                 val description = currentArticle.optString("description")
                 val imageUrl = currentArticle.optString("urlToImage")
                 val url = currentArticle.optString("url")
-
+                val contentSnippet = currentArticle.optString("content")
                 val sourceObject = currentArticle.getJSONObject("source")
                 val sourceName = sourceObject.optString("name")
 
@@ -148,6 +150,7 @@ class NewsManager {
                     NewsArticle(
                         title = title,
                         description = description,
+                        content = contentSnippet,
                         imageUrl = imageUrl,
                         url = url,
                         sourceName = sourceName
@@ -223,6 +226,7 @@ class NewsManager {
                 val title = currentArticle.optString("title")
                 val description = currentArticle.optString("description")
                 val imageUrl = currentArticle.optString("urlToImage")
+                val contentSnippet = currentArticle.optString("content")
                 val url = currentArticle.optString("url")
                 val source = currentArticle.getJSONObject("source")
                 val sourceName = source.optString("name")
@@ -232,6 +236,7 @@ class NewsManager {
                     title = title,
                     sourceName = sourceName,
                     description = description,
+                    content = contentSnippet,
                     imageUrl = imageUrl,
                     url = url,
                 )

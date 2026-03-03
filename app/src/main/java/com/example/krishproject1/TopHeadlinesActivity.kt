@@ -1,6 +1,7 @@
 
 package com.example.krishproject1
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -26,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.content.edit
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import kotlinx.coroutines.Dispatchers
@@ -42,13 +44,16 @@ class TopHeadlinesActivity : ComponentActivity() {
 
 @Composable
 fun TopHeadlinesScreen() {
-    val sourcesActivity = remember { SourcesActivity() }
+    val context = LocalContext.current
+    // for saving category selection
+    val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
+    // for api calls
     val newsManager = remember { NewsManager() }
     // getting api key from values folder
     val apiKey = stringResource(id = R.string.NewsKey)
-    // start with business
-    var selectedCategory by remember { mutableStateOf("business") }
-    // list of top articles
+    // load category from prefs
+    var selectedCategory by remember { mutableStateOf(prefs.getString("category", "business") ?: "business") }
+    // list of top articles that will be displayed
     var topArticles by remember { mutableStateOf<List<NewsArticle>>(emptyList()) }
 
     LaunchedEffect(selectedCategory) {
@@ -77,8 +82,13 @@ fun TopHeadlinesScreen() {
         Column(modifier = Modifier.fillMaxWidth()) {
             // Top Headline Categories req: calling function that displays the dropdown
             SourcesCategoryDropdown(
+                currentCategory = selectedCategory,
                 onCategorySelected = { category ->
                     selectedCategory = category
+                    // Data Persistence req
+                    prefs.edit {
+                        putString("category", category)
+                    }
                 }
             )
         }
@@ -135,5 +145,5 @@ fun TopHeadlinesScreen() {
 @Preview(showBackground = true)
 @Composable
 fun TopHeadlinesPreview() {
-   TopHeadlinesScreen()
+    TopHeadlinesScreen()
 }

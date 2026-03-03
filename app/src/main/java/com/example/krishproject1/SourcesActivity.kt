@@ -156,7 +156,7 @@ fun SourcesScreen(userQuery: String) {
                     val intent = Intent(context, ResultsActivity::class.java)
                     intent.putExtra("query", userQuery)
                     intent.putExtra("sourceId", "")
-                    intent.putExtra("sourceName", "All Sources")
+                    intent.putExtra("sourceName", "")
                     context.startActivity(intent)
                 },
                 modifier = Modifier.padding(top = 16.dp)

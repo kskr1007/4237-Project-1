@@ -1,6 +1,7 @@
 
 package com.example.krishproject1
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -26,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.content.edit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -42,13 +44,16 @@ class SourcesActivity : ComponentActivity() {
 
 @Composable
 fun SourcesScreen(userQuery: String) {
+    val context = LocalContext.current
+    // for saving selected category
+    val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
     // for the news api
     val newsManager = remember { NewsManager() }
     // getting api key from values folder
     val apiKey = stringResource(id = R.string.NewsKey)
     // start with business
-    var selectedCategory by remember { mutableStateOf("business") }
-    // list of sources
+    var selectedCategory by remember { mutableStateOf(prefs.getString("category", "business") ?: "business") }
+    // list of sources that will be displayed
     var sources by remember { mutableStateOf<List<NewsSource>>(emptyList()) }
 
     LaunchedEffect(selectedCategory) {
@@ -81,8 +86,13 @@ fun SourcesScreen(userQuery: String) {
             )
             // calling function that displays the dropdown
             SourcesCategoryDropdown(
+                currentCategory = selectedCategory,
                 onCategorySelected = { category ->
+                    // Data Persistence req
                     selectedCategory = category
+                    prefs.edit {
+                        putString("category", category)
+                    }
                 }
             )
         }
@@ -164,15 +174,15 @@ fun SourcesCategoryDropdown(
     categories: List<String> = listOf(
         "Business", "Entertainment", "General", "Health", "Science", "Sports", "Technology"
     ),
+    currentCategory: String,
     onCategorySelected: (String) -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedCategory by remember { mutableStateOf("Business") }
 
     // the dropdown box composable. **Used android docs and internet to find code**
     Box(modifier = Modifier.fillMaxWidth()) {
         Text(
-            text = selectedCategory,
+            text = currentCategory,
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { expanded = true }
@@ -194,7 +204,6 @@ fun SourcesCategoryDropdown(
                 DropdownMenuItem(
                     text = { Text(category)},
                     onClick = {
-                        selectedCategory = category
                         expanded = false
                         onCategorySelected(category)
                     }

@@ -183,7 +183,7 @@ fun ResultsScreen(userQuery: String, sourceId: String, sourceName: String, horiz
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     // null safe description
-                                    text = article.description ?: "",
+                                    text = article.description ?: "No description availible",
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }

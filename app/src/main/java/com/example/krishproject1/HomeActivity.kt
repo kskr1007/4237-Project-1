@@ -149,7 +149,10 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 Text(
                     text = "VIEW TOP HEADLINES",
                     color = Color.Blue,
-                    modifier = Modifier.clickable { }
+                    modifier = Modifier.clickable {
+                        val intent = Intent(context, TopHeadlinesActivity::class.java)
+                        context.startActivity(intent)
+                    }
                 )
             }
         }

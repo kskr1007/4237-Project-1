@@ -195,4 +195,53 @@ class NewsManager {
         // if no locality was found
         return "Location Not Found"
     }
+    fun getTopHeadlines(category: String, apiKey: String): List<NewsArticle> {
+        // Results Networking req
+        // request using specific query and source
+        val request = Request.Builder()
+            .url("https://newsapi.org/v2/top-headlines?category=$category&country=us&apiKey=$apiKey")
+            .get()
+            .build()
+
+        // response value
+        val response = okHttpClient.newCall(request).execute()
+        // response body
+        val responseBody = response.body?.string()
+
+        if (response.isSuccessful && !responseBody.isNullOrEmpty()) {
+
+            // creating list to store articles
+            val articlesList = mutableListOf<NewsArticle>()
+            // converting text into json object
+            val json = JSONObject(responseBody)
+            // getting "articles" from json object
+            val articles = json.getJSONArray("articles")
+
+            for (i in 0 until articles.length()) {
+                // for each article: get the title, description, imageURL, and url
+                val currentArticle = articles.getJSONObject(i)
+                val title = currentArticle.optString("title")
+                val description = currentArticle.optString("description")
+                val imageUrl = currentArticle.optString("urlToImage")
+                val url = currentArticle.optString("url")
+                val source = currentArticle.getJSONObject("source")
+                val sourceName = source.optString("name")
+
+                // creating NewsArticle object with the gathered fields
+                val article = NewsArticle(
+                    title = title,
+                    sourceName = sourceName,
+                    description = description,
+                    imageUrl = imageUrl,
+                    url = url,
+                )
+                // adding new article to results list
+                articlesList.add(article)
+            }
+            // returning list of gathered articles
+            return articlesList
+        }
+        // empty list if nothing found
+        return listOf()
+    }
 }

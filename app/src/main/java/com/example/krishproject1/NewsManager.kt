@@ -35,13 +35,13 @@ class NewsManager {
         Log.d("response", "$response")
 
         if (response.isSuccessful && !responseBody.isNullOrEmpty()) {
-            // make list of sources
+            // make empty list of sources
             val sources = mutableListOf<NewsSource>()
             // create json object with response body
             val json = JSONObject(responseBody)
             // get "sources" from the json object
             val sourcesArray = json.getJSONArray("sources")
-            // for each source
+            // for each source...
             for (i in 0 until sourcesArray.length()) {
                 // current source
                 val currentSource = sourcesArray.getJSONObject(i)
@@ -55,10 +55,10 @@ class NewsManager {
                     name = name,
                     description = description
                 )
-                // add to list
+                // add source to list
                 sources.add(source)
             }
-            // return list of sources to be displayed
+            // return list of sources to be displayed in the column
             return sources
         } else {
             // empty list if no sources were found
@@ -146,7 +146,7 @@ class NewsManager {
                 val contentSnippet = currentArticle.optString("content")
                 val sourceObject = currentArticle.getJSONObject("source")
                 val sourceName = sourceObject.optString("name")
-
+                // create the article object and add to total list of articles
                 articlesList.add(
                     NewsArticle(
                         title = title,
@@ -158,8 +158,10 @@ class NewsManager {
                     )
                 )
             }
+            // return articles
             return articlesList
         }
+        // return blank list
         return listOf()
     }
 
@@ -196,9 +198,10 @@ class NewsManager {
                 }
             }
         }
-        // if no locality was found
+        // if no city was found
         return "Location Not Found"
     }
+    // gets top headlines for a category, uses paging
     fun getTopHeadlines(category: String, apiKey: String, currentPage: Int): NewsResponse{
         // Results Networking req
         // request using specific query and source
@@ -214,7 +217,6 @@ class NewsManager {
         val responseBody = response.body?.string()
 
         if (response.isSuccessful && !responseBody.isNullOrEmpty()) {
-
             // creating list to store articles
             val articlesList = mutableListOf<NewsArticle>()
             // converting text into json object
@@ -247,7 +249,8 @@ class NewsManager {
                 // adding new article to results list
                 articlesList.add(article)
             }
-            // returning the articles list and the total results to be paged
+            // returning the articles list and the total results to be paged.
+            // in the form of a news response object
             return NewsResponse(
                 articles = articlesList,
                 totalResults = totalResults

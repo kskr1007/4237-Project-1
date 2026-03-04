@@ -30,7 +30,7 @@ import androidx.core.content.edit
 @Composable
 fun LogInScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    // local data persistence
+    // local data persistence for login info
     val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
     var username by remember { mutableStateOf(prefs.getString("username", "") ?: "") }
     var password by remember { mutableStateOf(prefs.getString("password", "") ?: "") }
@@ -88,6 +88,7 @@ fun LogInScreen(modifier: Modifier = Modifier) {
     }
 }
 
+// checks username and password for length requirements
 fun checkUsernameAndPassword(username: String, password: String): Boolean {
     return username.isNotBlank() && password.isNotBlank()
 }

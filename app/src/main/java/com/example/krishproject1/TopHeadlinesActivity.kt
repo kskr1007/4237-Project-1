@@ -42,6 +42,19 @@ class TopHeadlinesActivity : ComponentActivity() {
 
 @Composable
 fun TopHeadlinesScreen() {
+    // current page
+    var currentPage by remember { mutableStateOf(1) }
+    // count of total results
+    var totalResults by remember { mutableStateOf(0) }
+    // Max Pages req: max page = total results/20, ultimate max is 5.
+    // Changing Top Headlines req: runs every time totalResults is changed (when category is changed)
+    val maxPage = remember(totalResults) {
+        // find totalResults/20 and round up
+        val calculate = kotlin.math.ceil(totalResults / 20.0).toInt()
+        // make sure its bounded
+        // **had to use android docs to find this method**
+        calculate.coerceIn(1, 5)
+    }
     val context = LocalContext.current
     // for saving category selection
     val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
@@ -54,14 +67,15 @@ fun TopHeadlinesScreen() {
     // list of top articles that will be displayed
     var topArticles by remember { mutableStateOf<List<NewsArticle>>(emptyList()) }
 
-    LaunchedEffect(selectedCategory) {
-        topArticles = withContext(Dispatchers.IO) {
-            // Top Headlines Networking req: based on selected category, api request is different
-            newsManager.getTopHeadlines(
-                selectedCategory,
-                apiKey
-            )
+    LaunchedEffect(selectedCategory, currentPage) {
+        // response returns a NewsResponse object that includes the top 20 articles and the total results
+        val response = withContext(Dispatchers.IO) {
+            newsManager.getTopHeadlines(selectedCategory, apiKey, currentPage)
         }
+        // top 20 articles
+        topArticles = response.articles
+        // total number of hits
+        totalResults = response.totalResults
     }
     Column(
         modifier = Modifier
@@ -83,11 +97,13 @@ fun TopHeadlinesScreen() {
                 currentCategory = selectedCategory,
                 onCategorySelected = { category ->
                     selectedCategory = category
-                    // Data Persistence req
+                    // Changing Top Headlines req: reset currentPage to 1 when a new category is clicked
+                    currentPage = 1
+                    // Data Persistence req: save the current category
                     prefs.edit {
                         putString("category", category)
                     }
-                }
+                },
             )
         }
 
@@ -97,42 +113,68 @@ fun TopHeadlinesScreen() {
             modifier = Modifier.weight(1f),
         ) {
             items(topArticles) { article ->
-
-                val context = LocalContext.current
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                        .clickable {
-                            // open article in browser
-                            val intent = Intent(
-                                Intent.ACTION_VIEW,
-                                article.url.toUri()
+                    val context = LocalContext.current
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                            .clickable {
+                                // open article in browser
+                                val intent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    article.url.toUri()
+                                )
+                                context.startActivity(intent)
+                            }
+                    ) {
+                        // Article Display req
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            AsyncImage(
+                                model = article.imageUrl,
+                                contentDescription = article.title,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp)
                             )
-                            context.startActivity(intent)
+                            Text(
+                                text = article.title,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = article.description ?: "No description available",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
                         }
-                ) {
-                    // Article Display req
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        AsyncImage(
-                            model = article.imageUrl,
-                            contentDescription = article.title,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp)
-                        )
-                        Text(
-                            text = article.title,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = article.description ?: "No description available",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
                     }
-                }
+            }
+
+        }
+        // Paging req
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Button States req
+            Button(
+                // decrement current page
+                onClick = { currentPage-- },
+                // only enabled while greater than 1
+                enabled = currentPage > 1
+            ) {
+                Text("Previous")
+            }
+
+            Text(text = "Page $currentPage of $maxPage")
+
+            Button(
+                // increment current page
+                onClick = { currentPage++ },
+                // only enabled while less than maxPage
+                enabled = currentPage < maxPage
+            ) {
+                Text("Next")
             }
         }
     }

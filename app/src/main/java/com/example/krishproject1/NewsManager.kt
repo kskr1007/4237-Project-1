@@ -71,7 +71,8 @@ class NewsManager {
          // Results Networking req
         // request using specific query and source
         val request = Request.Builder()
-            .url("https://newsapi.org/v2/everything?q=$query&sources=$sourceId&language=en&apiKey=$apiKey")            .get()
+            .url("https://newsapi.org/v2/everything?q=$query&sources=$sourceId&language=en&apiKey=$apiKey")
+            .get()
             .build()
 
          // response value
@@ -198,11 +199,12 @@ class NewsManager {
         // if no locality was found
         return "Location Not Found"
     }
-    fun getTopHeadlines(category: String, apiKey: String): List<NewsArticle> {
+    fun getTopHeadlines(category: String, apiKey: String, currentPage: Int): NewsResponse{
         // Results Networking req
         // request using specific query and source
+        // uses page query parameter to fetch results for every individual page
         val request = Request.Builder()
-            .url("https://newsapi.org/v2/top-headlines?category=$category&country=us&apiKey=$apiKey")
+            .url("https://newsapi.org/v2/top-headlines?category=$category&country=us&page=$currentPage&apiKey=$apiKey")
             .get()
             .build()
 
@@ -217,6 +219,8 @@ class NewsManager {
             val articlesList = mutableListOf<NewsArticle>()
             // converting text into json object
             val json = JSONObject(responseBody)
+            // get total results count
+            val totalResults = json.optInt("totalResults", 0)
             // getting "articles" from json object
             val articles = json.getJSONArray("articles")
 
@@ -243,10 +247,13 @@ class NewsManager {
                 // adding new article to results list
                 articlesList.add(article)
             }
-            // returning list of gathered articles
-            return articlesList
+            // returning the articles list and the total results to be paged
+            return NewsResponse(
+                articles = articlesList,
+                totalResults = totalResults
+            )
         }
-        // empty list if nothing found
-        return listOf()
+        // empty object if nothing is returned
+        return NewsResponse(emptyList(), 0)
     }
 }

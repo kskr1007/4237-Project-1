@@ -2,10 +2,6 @@
 package com.example.krishproject1
 
 import android.content.Context
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,19 +27,9 @@ import androidx.core.content.edit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class SourcesActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // Search Term req: the query from the home screen
-        val userQuery = intent.getStringExtra("query") ?: ""
-        setContent {
-            SourcesScreen(userQuery)
-        }
-    }
-}
 
 @Composable
-fun SourcesScreen(userQuery: String) {
+fun SourcesScreen(query: String, onResult: (String, String, String) -> Unit) {
     val context = LocalContext.current
     // for saving selected category
     val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
@@ -73,7 +59,7 @@ fun SourcesScreen(userQuery: String) {
     ) {
         // Search Term req
         Text(
-            text = "Results for $userQuery",
+            text = "Results for $query ",
             fontSize = 28.sp,
             modifier = Modifier.padding(bottom = 24.dp)
         )
@@ -86,7 +72,9 @@ fun SourcesScreen(userQuery: String) {
             )
             // calling function that displays the dropdown
             SourcesCategoryDropdown(
+                // current category is the selected category
                 currentCategory = selectedCategory,
+                // category is the selected category
                 onCategorySelected = { category ->
                     // Data Persistence req
                     selectedCategory = category
@@ -113,19 +101,14 @@ fun SourcesScreen(userQuery: String) {
         ) {
             items(sources) { source ->
 
-                val context = LocalContext.current
-
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
                         .clickable {
-                            // for passing query and source name to results screen
-                            val intent = Intent(context, ResultsActivity::class.java)
-                            intent.putExtra("query", userQuery)
-                            intent.putExtra("sourceId", source.id)
-                            intent.putExtra("sourceName", source.name)
-                            context.startActivity(intent)
+                            // navigate to results
+                            // sending query, source id, and source name
+                            onResult(query, source.id, source.name)
                         }
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -149,15 +132,11 @@ fun SourcesScreen(userQuery: String) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val context = LocalContext.current
             Button(
                 onClick = {
-                    // if skip sources is clicked, send query, blank source id, and general source name
-                    val intent = Intent(context, ResultsActivity::class.java)
-                    intent.putExtra("query", userQuery)
-                    intent.putExtra("sourceId", "")
-                    intent.putExtra("sourceName", "")
-                    context.startActivity(intent)
+                    // navigate to results
+                    // sending just the query since there's no specific source
+                    onResult(query, "", "")
                 },
                 modifier = Modifier.padding(top = 16.dp)
             ) {
@@ -171,15 +150,17 @@ fun SourcesScreen(userQuery: String) {
 @Composable
 fun SourcesCategoryDropdown(
     // Sources Categories req: fields for news api
+    // **Used android docs and internet to find code for dropdown**
     categories: List<String> = listOf(
         "Business", "Entertainment", "General", "Health", "Science", "Sports", "Technology"
     ),
     currentCategory: String,
     onCategorySelected: (String) -> Unit = {}
 ) {
+    // to open/close the dropdown menu
     var expanded by remember { mutableStateOf(false) }
 
-    // the dropdown box composable. **Used android docs and internet to find code**
+    // the dropdown box composable.
     Box(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = currentCategory,
@@ -216,5 +197,5 @@ fun SourcesCategoryDropdown(
 @Preview(showBackground = true)
 @Composable
 fun SourcesPreview() {
-    SourcesScreen("Hello World")
+    //SourcesScreen("Hello World")
 }

@@ -3,9 +3,6 @@ package com.example.krishproject1
 
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -30,15 +27,6 @@ import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-
-class TopHeadlinesActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            TopHeadlinesScreen()
-        }
-    }
-}
 
 @Composable
 fun TopHeadlinesScreen() {
@@ -94,8 +82,10 @@ fun TopHeadlinesScreen() {
         Column(modifier = Modifier.fillMaxWidth()) {
             // Top Headline Categories req: calling function that displays the dropdown
             SourcesCategoryDropdown(
+                // marking current category as the selected category
                 currentCategory = selectedCategory,
                 onCategorySelected = { category ->
+                    // category is selected category
                     selectedCategory = category
                     // Changing Top Headlines req: reset currentPage to 1 when a new category is clicked
                     currentPage = 1

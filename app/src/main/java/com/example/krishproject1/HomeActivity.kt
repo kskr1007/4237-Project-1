@@ -2,16 +2,12 @@
 package com.example.krishproject1
 
 import android.content.Context
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import android.content.Intent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -30,16 +26,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.edit
 
-class HomeActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            HomeScreen()
-        }
-    }
-}
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(modifier: Modifier = Modifier, onSourceSelected: (query:String) -> Unit, onMap: () -> Unit, onTopHeadlines: () -> Unit) {
     val context = LocalContext.current
     // for remembering search query
     val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
@@ -85,8 +73,6 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
                 Spacer(Modifier.height(8.dp))
 
-                val context = LocalContext.current
-
                // Search Button req.
                 Text(
                     text = "SEARCH",
@@ -96,10 +82,9 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                         prefs.edit {
                             putString("query", query)
                         }
-                        val intent = Intent(context, SourcesActivity::class.java)
                         // Data Persistence req: save user query
-                        intent.putExtra("query", query)
-                        context.startActivity(intent)
+                        // navigate to sources
+                        onSourceSelected(query)
                     }
                 )
             }
@@ -119,14 +104,13 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
                 Spacer(Modifier.height(8.dp))
 
-                val context = LocalContext.current
                 // Local News Button req.
                 Text(
                     text = "VIEW MAP",
                     color = Color.Blue,
                     modifier = Modifier.clickable {
-                        val intent = Intent(context, MapActivity::class.java)
-                        context.startActivity(intent)
+                        // navigate to map
+                        onMap()
                     }
                 )
             }
@@ -151,8 +135,8 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                     text = "VIEW TOP HEADLINES",
                     color = Color.Blue,
                     modifier = Modifier.clickable {
-                        val intent = Intent(context, TopHeadlinesActivity::class.java)
-                        context.startActivity(intent)
+                        // navigate to top headlines
+                        onTopHeadlines()
                     }
                 )
             }
@@ -163,5 +147,5 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun HomePreview() {
-    HomeScreen()
+    //HomeScreen()
 }

@@ -28,7 +28,7 @@ import androidx.core.content.edit
 
 
 @Composable
-fun LogInScreen(modifier: Modifier = Modifier) {
+fun LogInScreen(modifier: Modifier = Modifier, onLogin: () -> Unit) {
     val context = LocalContext.current
     // local data persistence for login info
     val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
@@ -70,9 +70,8 @@ fun LogInScreen(modifier: Modifier = Modifier) {
         Button(
             onClick = { prefs.edit{putString("username", username); putString("password", password)}
                 Toast.makeText(context, "You logged in", Toast.LENGTH_LONG).show()
-                // using intent to move to the HomeScreen once logged in
-                val intent = Intent(context, HomeActivity::class.java)
-                context.startActivity(intent)
+                // navigate to home screen
+                onLogin()
             },
             enabled = checkUsernameAndPassword(username,password) && checkLengthsAndSpaces(username, password)
         ) {
@@ -99,5 +98,5 @@ fun checkLengthsAndSpaces(username: String, password: String): Boolean{
 @Preview(showBackground = true)
 @Composable
 fun LoginPreview() {
-    LogInScreen()
+   // LogInScreen()
 }

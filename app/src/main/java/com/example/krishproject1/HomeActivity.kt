@@ -41,6 +41,7 @@ class HomeActivity : ComponentActivity() {
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
+    // for remembering search query
     val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
     var query by remember { mutableStateOf(prefs.getString("query", "") ?: "") }
 

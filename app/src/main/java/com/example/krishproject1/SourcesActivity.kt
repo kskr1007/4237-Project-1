@@ -47,11 +47,11 @@ fun SourcesScreen(userQuery: String) {
     val context = LocalContext.current
     // for saving selected category
     val prefs = remember { context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE) }
-    // for the news api
+    // for the news api functions
     val newsManager = remember { NewsManager() }
-    // getting api key from values folder
+    // news api key
     val apiKey = stringResource(id = R.string.NewsKey)
-    // start with business
+    // remember prev category
     var selectedCategory by remember { mutableStateOf(prefs.getString("category", "business") ?: "business") }
     // list of sources that will be displayed
     var sources by remember { mutableStateOf<List<NewsSource>>(emptyList()) }

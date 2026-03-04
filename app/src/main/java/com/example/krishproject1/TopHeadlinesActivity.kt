@@ -52,7 +52,7 @@ fun TopHeadlinesScreen() {
         // find totalResults/20 and round up
         val calculate = kotlin.math.ceil(totalResults / 20.0).toInt()
         // make sure its bounded
-        // **had to use android docs to find this method**
+        // **had to use internet to find this method**
         calculate.coerceIn(1, 5)
     }
     val context = LocalContext.current

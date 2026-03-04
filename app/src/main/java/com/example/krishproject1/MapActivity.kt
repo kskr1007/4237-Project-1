@@ -47,12 +47,13 @@ fun DisplayMap(modifier: Modifier = Modifier) {
     var lon by remember { mutableStateOf(prefs.getString("lon", "77.0369") ?: "77.0369") }
     // google api key
     val apiKey = stringResource(id = R.string.MapsKey)
-    // used to call helper functions
+    // used to call helper functions in news manager class
     val newsManager = remember { NewsManager() }
+    // variable to store city given by geocoding api request
     var loc by remember { mutableStateOf("") }
-    // I had to search google maps and api to get this variable
+    // **I had to search google maps and api to get this variable**
     val scope = rememberCoroutineScope()
-    // for showing results box on bottom
+    // on/off switch for showing results box on bottom
     var showResults by remember { mutableStateOf(false) }
     // center point using lat and lon
     val center = LatLng(lat.toDouble(), lon.toDouble())
@@ -130,11 +131,11 @@ fun DisplayMap(modifier: Modifier = Modifier) {
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .height(350.dp)
-                    // this raises the base of the box so it doesn't cover zoom
+                    // offset raises the base of the box so it doesn't cover zoom
                     .offset(y = (-90).dp)
                     .background(Color.White)
             ) {
-                // calling results screen function to display articles
+                // calling results screen function to display articles over the map
                 ResultsScreen(
                     userQuery = loc,
                     sourceId = "",

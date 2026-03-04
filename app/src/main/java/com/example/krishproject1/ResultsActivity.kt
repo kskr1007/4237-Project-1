@@ -51,24 +51,29 @@ class ResultsActivity : ComponentActivity() {
 }
 @Composable
 fun ResultsScreen(userQuery: String, sourceId: String, sourceName: String, horizontal: Boolean = false) {
+    // used to call functions in news manager class
     val newsManager = remember { NewsManager() }
+    // news api key
     val apiKey = stringResource(id = R.string.NewsKey)
+    // on/off switch for showing loading UI element
     var isLoading by remember { mutableStateOf(false) }
-
+    // list of articles to be displayed
     var articles by remember { mutableStateOf<List<NewsArticle>>(emptyList()) }
     val context = LocalContext.current
     LaunchedEffect(userQuery, sourceId) {
+        // show loading
         isLoading = true
         articles = withContext(Dispatchers.IO) {
-            // if no source is is provided, show all sources
+            // if no source is is provided, show all sources (skip sources)
             if (sourceId.isEmpty()) {
                 newsManager.skipSources(userQuery, apiKey)
             }
-            // if a source is provided use that in request
+            // if a source is provided use that in request (search with a source)
             else {
                 newsManager.getArticles(userQuery, sourceId, apiKey)
             }
         }
+        // turn off loading
         isLoading = false
     }
     Box(modifier = Modifier.fillMaxSize()) {
@@ -79,16 +84,18 @@ fun ResultsScreen(userQuery: String, sourceId: String, sourceName: String, horiz
             Text(
                 // Results Title req: showing user source and query at top
                 text =
-                    // in the case that it is being called via map screen
                     if (sourceName != userQuery) {
                         "$sourceName Results for $userQuery"
-                    } else {
+                    }
+                    // in the case that it is being called via map screen.
+                    // don't want it to say Washington Results for Washington
+                    else {
                         "Results for $userQuery"
                     },
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-            // if the article is displayed over map
+            // if the article is displayed over map, use row
             if (horizontal) {
                 // using lazy row for horizontal scrolling
                 LazyRow(
@@ -110,16 +117,20 @@ fun ResultsScreen(userQuery: String, sourceId: String, sourceName: String, horiz
                                 }
                         ) {
                             Column(modifier = Modifier.padding(12.dp)) {
-                                AsyncImage(
-                                    model = article.imageUrl,
-                                    contentDescription = article.title,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(150.dp)
-                                )
+                                // if theres no image, text comes first
+                                if (article.imageUrl.isNotEmpty() && article.imageUrl != "null") {
+                                    AsyncImage(
+                                        model = article.imageUrl,
+                                        contentDescription = article.title,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(200.dp)
+                                            .padding(bottom = 8.dp)
+                                    )
+                                }
 
                                 Spacer(modifier = Modifier.height(8.dp))
-
+                                // Title
                                 Text(
                                     text = article.title,
                                     style = MaterialTheme.typography.titleMedium
@@ -193,7 +204,7 @@ fun ResultsScreen(userQuery: String, sourceId: String, sourceName: String, horiz
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     // null safe description
-                                    text = article.description ?: "No description availible",
+                                    text = article.description ?: "No description available",
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
@@ -204,7 +215,7 @@ fun ResultsScreen(userQuery: String, sourceId: String, sourceName: String, horiz
         }
 
         // if loading is true, show a spinning UI element
-        // I got this code from internet
+        // **I got this code from internet**
         // due to adding this UI feature, I had to wrap the column in a box due to alignment issues
         if (isLoading) {
             CircularProgressIndicator(

@@ -1,9 +1,6 @@
 package com.example.krishproject1
 
 import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,19 +33,6 @@ import kotlinx.coroutines.withContext
 import coil.compose.AsyncImage
 import androidx.core.net.toUri
 
-
-class ResultsActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // to display query and source name at top
-        val userQuery = intent.getStringExtra("query") ?: ""
-        val sourceId = intent.getStringExtra("sourceId") ?: ""
-        val sourceName = intent.getStringExtra("sourceName") ?: ""
-        setContent {
-            ResultsScreen(userQuery, sourceId, sourceName)
-        }
-    }
-}
 @Composable
 fun ResultsScreen(userQuery: String, sourceId: String, sourceName: String, horizontal: Boolean = false) {
     // used to call functions in news manager class
@@ -88,7 +72,7 @@ fun ResultsScreen(userQuery: String, sourceId: String, sourceName: String, horiz
                         "$sourceName Results for $userQuery"
                     }
                     // in the case that it is being called via map screen.
-                    // don't want it to say Washington Results for Washington
+                    // ex: I don't want it to say Washington Results for Washington
                     else {
                         "Results for $userQuery"
                     },

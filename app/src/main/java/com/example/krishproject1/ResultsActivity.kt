@@ -1,6 +1,7 @@
 package com.example.krishproject1
 
 import android.content.Intent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -60,7 +63,13 @@ fun ResultsScreen(userQuery: String, sourceId: String, sourceName: String, horiz
         // turn off loading
         isLoading = false
     }
-    Box(modifier = Modifier.fillMaxSize()) {
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            // light purple background
+            .background(Color(0xFFE1BEE7))
+    ) {
         Column(
             modifier = Modifier
                 .padding(16.dp)
@@ -89,6 +98,9 @@ fun ResultsScreen(userQuery: String, sourceId: String, sourceName: String, horiz
                 ) {
                     items(articles) { article ->
                         Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFF64B5F6)
+                            ),
                             modifier = Modifier
                                 .width(300.dp)
                                 .clickable {
@@ -155,6 +167,9 @@ fun ResultsScreen(userQuery: String, sourceId: String, sourceName: String, horiz
                     // Article Display req: displaying image, name, sourceName, and description for each article in loaded list from source
                     items(articles) { article ->
                         Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFF64B5F6)
+                            ),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 6.dp)

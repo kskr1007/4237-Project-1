@@ -2,6 +2,7 @@
 package com.example.krishproject1
 
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.edit
@@ -38,7 +40,11 @@ fun SourcesScreen(query: String, onResult: (String, String, String) -> Unit) {
     // news api key
     val apiKey = stringResource(id = R.string.NewsKey)
     // remember prev category
-    var selectedCategory by remember { mutableStateOf(prefs.getString("category", "business") ?: "business") }
+    var selectedCategory by remember {
+        mutableStateOf(
+            prefs.getString("category", "business") ?: "business"
+        )
+    }
     // list of sources that will be displayed
     var sources by remember { mutableStateOf<List<NewsSource>>(emptyList()) }
 
@@ -51,96 +57,106 @@ fun SourcesScreen(query: String, onResult: (String, String, String) -> Unit) {
             )
         }
     }
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            // light purple background
+            .background(Color(0xFFE1BEE7))
     ) {
-        // Search Term req
-        Text(
-            text = "Results for $query ",
-            fontSize = 28.sp,
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
-
-        // categories dropdown section
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = "Category",
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            // calling function that displays the dropdown
-            SourcesCategoryDropdown(
-                // current category is the selected category
-                currentCategory = selectedCategory,
-                // category is the selected category
-                onCategorySelected = { category ->
-                    // Data Persistence req
-                    selectedCategory = category
-                    prefs.edit {
-                        putString("category", category)
-                    }
-                }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // sources section
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = "Sources",
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
-        // Sources Networking req: lazy column to show card for each source, no paging here.
-        LazyColumn(
-            // constrains the space the source results take
-            modifier = Modifier.weight(1f),
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            items(sources) { source ->
+            // Search Term req
+            Text(
+                text = "Results for $query ",
+                fontSize = 28.sp,
+                modifier = Modifier.padding(bottom = 24.dp)
+            )
 
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp)
-                        .clickable {
-                            // navigate to results
-                            // sending query, source id, and source name
-                            onResult(query, source.id, source.name)
+            // categories dropdown section
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Category",
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                // calling function that displays the dropdown
+                SourcesCategoryDropdown(
+                    // current category is the selected category
+                    currentCategory = selectedCategory,
+                    // category is the selected category
+                    onCategorySelected = { category ->
+                        // Data Persistence req
+                        selectedCategory = category
+                        prefs.edit {
+                            putString("category", category)
                         }
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = source.name,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = source.description,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // sources section
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "Sources",
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+            // Sources Networking req: lazy column to show card for each source, no paging here.
+            LazyColumn(
+                // constrains the space the source results take
+                modifier = Modifier.weight(1f),
+            ) {
+                items(sources) { source ->
+
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFF64B5F6)
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                            .clickable {
+                                // navigate to results
+                                // sending query, source id, and source name
+                                onResult(query, source.id, source.name)
+                            }
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = source.name,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = source.description,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
                     }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
-        // Skip Sources req
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Button(
-                onClick = {
-                    // navigate to results
-                    // sending just the query since there's no specific source
-                    onResult(query, "", "")
-                },
-                modifier = Modifier.padding(top = 16.dp)
+            // Skip Sources req
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Skip Source Selection")
+                Button(
+                    onClick = {
+                        // navigate to results
+                        // sending just the query since there's no specific source
+                        onResult(query, "", "")
+                    },
+                    modifier = Modifier.padding(top = 16.dp)
+                ) {
+                    Text("Skip Source Selection")
+                }
             }
         }
     }

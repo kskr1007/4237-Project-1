@@ -25,7 +25,7 @@ class NewsManager {
      fun getSources(category: String, apiKey: String): List<NewsSource> {
         // making request body
         val request = Request.Builder()
-            .url("https://newsapi.org/v2/sources?category=$category&apiKey=$apiKey")
+            .url("https://newsapi.org/v2/sources?category=$category&apiKey=$apiKey&language=en")
             .get()
             .build()
 

@@ -3,6 +3,7 @@ package com.example.krishproject1
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.edit
@@ -65,46 +67,56 @@ fun TopHeadlinesScreen() {
         // total number of hits
         totalResults = response.totalResults
     }
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            // light purple background
+            .background(Color(0xFFE1BEE7))
     ) {
-
-        Text(
-            text = "Top Headlines",
-            fontSize = 28.sp,
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
-
-        // categories dropdown section
-        Column(modifier = Modifier.fillMaxWidth()) {
-            // Top Headline Categories req: calling function that displays the dropdown
-            SourcesCategoryDropdown(
-                // marking current category as the selected category
-                currentCategory = selectedCategory,
-                onCategorySelected = { category ->
-                    // category is selected category
-                    selectedCategory = category
-                    // Changing Top Headlines req: reset currentPage to 1 when a new category is clicked
-                    currentPage = 1
-                    // Data Persistence req: save the current category
-                    prefs.edit {
-                        putString("category", category)
-                    }
-                },
-            )
-        }
-
-        // Sources Networking req: lazy column to show card for each source, no paging here.
-        LazyColumn(
-            // constrains the space the source results take
-            modifier = Modifier.weight(1f),
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            items(topArticles) { article ->
+
+            Text(
+                text = "Top Headlines",
+                fontSize = 28.sp,
+                modifier = Modifier.padding(bottom = 24.dp),
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            // categories dropdown section
+            Column(modifier = Modifier.fillMaxWidth()) {
+                // Top Headline Categories req: calling function that displays the dropdown
+                SourcesCategoryDropdown(
+                    // marking current category as the selected category
+                    currentCategory = selectedCategory,
+                    onCategorySelected = { category ->
+                        // category is selected category
+                        selectedCategory = category
+                        // Changing Top Headlines req: reset currentPage to 1 when a new category is clicked
+                        currentPage = 1
+                        // Data Persistence req: save the current category
+                        prefs.edit {
+                            putString("category", category)
+                        }
+                    },
+                )
+            }
+
+            // Sources Networking req: lazy column to show card for each source, no paging here.
+            LazyColumn(
+                // constrains the space the source results take
+                modifier = Modifier.weight(1f),
+            ) {
+                items(topArticles) { article ->
                     val context = LocalContext.current
                     Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFF64B5F6)
+                        ),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
@@ -137,34 +149,35 @@ fun TopHeadlinesScreen() {
                             )
                         }
                     }
+                }
+
             }
-
-        }
-        // Paging req
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Button States req
-            Button(
-                // decrement current page
-                onClick = { currentPage-- },
-                // only enabled while greater than 1
-                enabled = currentPage > 1
+            // Paging req
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Previous")
-            }
+                // Button States req
+                Button(
+                    // decrement current page
+                    onClick = { currentPage-- },
+                    // only enabled while greater than 1
+                    enabled = currentPage > 1
+                ) {
+                    Text("Previous")
+                }
 
-            Text(text = "Page $currentPage of $maxPage")
+                Text(text = "Page $currentPage of $maxPage")
 
-            Button(
-                // increment current page
-                onClick = { currentPage++ },
-                // only enabled while less than maxPage
-                enabled = currentPage < maxPage
-            ) {
-                Text("Next")
+                Button(
+                    // increment current page
+                    onClick = { currentPage++ },
+                    // only enabled while less than maxPage
+                    enabled = currentPage < maxPage
+                ) {
+                    Text("Next")
+                }
             }
         }
     }

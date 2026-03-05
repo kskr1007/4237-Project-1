@@ -52,7 +52,6 @@ fun DisplayMap(modifier: Modifier = Modifier) {
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(center, 10f)
     }
-    // Location Selection req
     // Google Maps req
     // launched effect allows the saved lat, lon to be used on the start of the activity
     LaunchedEffect(Unit) {
@@ -75,6 +74,7 @@ fun DisplayMap(modifier: Modifier = Modifier) {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
+            // Location Selection req
             onMapLongClick = { it ->
                 markerState.position = it
                 // Data Persistence req: save location and results
@@ -94,7 +94,7 @@ fun DisplayMap(modifier: Modifier = Modifier) {
                 // scope.launch uses a different thread to run in background
                 scope.launch {
                     cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(it, 15f))
-                    // using Google geocoding api to get city from lat, lng
+                    // “Local News” Networking req: using Google geocoding api to get city from lat, lng
                     val city = withContext(Dispatchers.IO) {
                         newsManager.getCity(it.latitude, it.longitude, apiKey)
                     }

@@ -106,7 +106,6 @@ fun TopHeadlinesScreen() {
                 )
             }
 
-            // Sources Networking req: lazy column to show card for each source, no paging here.
             LazyColumn(
                 // constrains the space the source results take
                 modifier = Modifier.weight(1f),

@@ -82,10 +82,7 @@ fun LogInScreen(modifier: Modifier = Modifier, onLogin: () -> Unit) {
                     // navigate to home screen
                     onLogin()
                 },
-                enabled = checkUsernameAndPassword(username, password) && checkLengthsAndSpaces(
-                    username,
-                    password
-                )
+                enabled =  checkFields(username, password)
             ) {
                 Text("Login")
             }
@@ -100,11 +97,8 @@ fun LogInScreen(modifier: Modifier = Modifier, onLogin: () -> Unit) {
     }
 }
 
-// checks username and password for length requirements
-fun checkUsernameAndPassword(username: String, password: String): Boolean {
-    return username.isNotBlank() && password.isNotBlank()
-}
-fun checkLengthsAndSpaces(username: String, password: String): Boolean{
+// Login req: checks username and password for length requirements
+fun checkFields(username: String, password: String): Boolean{
     return username.length >=5 && password.length >=8 && !username.contains(" ") && !password.contains(" ")
 }
 

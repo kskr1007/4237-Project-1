@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,7 +24,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             KrishProject1Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Navigate()
+                    Box(modifier = Modifier.padding(innerPadding)) {
+                        Navigate()
+                    }
                 }
             }
         }
@@ -88,11 +92,11 @@ fun Navigate() {
                 navArgument("sourceId") { type = NavType.StringType },
                 navArgument("sourceName") { type = NavType.StringType }
             )
-            // extracting values
-        ) { backStackEntry ->
-            val q = backStackEntry.arguments?.getString("query") ?: ""
-            val id = backStackEntry.arguments?.getString("sourceId") ?: ""
-            val name = backStackEntry.arguments?.getString("sourceName") ?: ""
+            // extracting data
+        ) { data ->
+            val q = data.arguments?.getString("query") ?: ""
+            val id = data.arguments?.getString("sourceId") ?: ""
+            val name = data.arguments?.getString("sourceName") ?: ""
 
             // showing results screen
             ResultsScreen(

@@ -80,7 +80,7 @@ fun ResultsScreen(userQuery: String, sourceId: String, sourceName: String, horiz
                     if (sourceName != userQuery) {
                         "$sourceName Results for $userQuery"
                     }
-                    // in the case that it is being called via map screen.
+                    // Search Term Display (MAPS) req: in the case that it is being called via map screen.
                     // ex: I don't want it to say Washington Results for Washington
                     else {
                         "Results for $userQuery"

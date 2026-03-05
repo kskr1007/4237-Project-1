@@ -106,7 +106,8 @@ fun SourcesScreen(query: String, onResult: (String, String, String) -> Unit) {
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
             }
-            // Sources Networking req: lazy column to show card for each source, no paging here.
+
+            // Article Display req: using lazy column
             LazyColumn(
                 // constrains the space the source results take
                 modifier = Modifier.weight(1f),
@@ -121,7 +122,7 @@ fun SourcesScreen(query: String, onResult: (String, String, String) -> Unit) {
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
                             .clickable {
-                                // navigate to results
+                                // Source Selection req: navigate to results
                                 // sending query, source id, and source name
                                 onResult(query, source.id, source.name)
                             }
@@ -163,10 +164,10 @@ fun SourcesScreen(query: String, onResult: (String, String, String) -> Unit) {
 }
 
 // Sources Categories req: using box and dropdown menu
+// **Used android docs and internet to find code for parts of dropdown menu**
 @Composable
 fun SourcesCategoryDropdown(
     // Sources Categories req: fields for news api
-    // **Used android docs and internet to find code for dropdown**
     categories: List<String> = listOf(
         "Business", "Entertainment", "General", "Health", "Science", "Sports", "Technology"
     ),

@@ -21,7 +21,7 @@ class NewsManager {
         okHttpClient = builder.build()
     }
 
-    // gets all sources for a certain category
+    // Sources Networking req: gets all sources for a certain category
      fun getSources(category: String, apiKey: String): List<NewsSource> {
         // making request body
         val request = Request.Builder()
@@ -203,7 +203,7 @@ class NewsManager {
     }
     // gets top headlines for a category, uses paging
     fun getTopHeadlines(category: String, apiKey: String, currentPage: Int): NewsResponse{
-        // Results Networking req
+        // Top Headlines Networking req
         // request using specific query and source
         // uses page query parameter to fetch results for every individual page
         val request = Request.Builder()
